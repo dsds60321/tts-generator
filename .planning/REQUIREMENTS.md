@@ -71,25 +71,25 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| API-01 | TBD | Pending |
-| API-02 | TBD | Pending |
-| API-03 | TBD | Pending |
-| WEB-01 | TBD | Pending |
-| WEB-02 | TBD | Pending |
-| WEB-03 | TBD | Pending |
-| SYN-01 | TBD | Pending |
-| SYN-02 | TBD | Pending |
-| SYN-03 | TBD | Pending |
-| VAL-01 | TBD | Pending |
-| VAL-02 | TBD | Pending |
-| VAL-03 | TBD | Pending |
-| ARCH-01 | TBD | Pending |
+| API-01 | Phase 2 | Pending |
+| API-02 | Phase 2 | Pending |
+| API-03 | Phase 1 | Pending |
+| WEB-01 | Phase 3 | Pending |
+| WEB-02 | Phase 3 | Pending |
+| WEB-03 | Phase 3 | Pending |
+| SYN-01 | Phase 1 | Pending |
+| SYN-02 | Phase 1 | Pending |
+| SYN-03 | Phase 1 | Pending |
+| VAL-01 | Phase 4 | Pending |
+| VAL-02 | Phase 4 | Pending |
+| VAL-03 | Phase 4 | Pending |
+| ARCH-01 | Phase 5 | Pending |
 
 **커버리지:**
 - v1 요구사항: 13개
-- phase에 매핑됨: 0개
-- 미매핑: 13개 ⚠️
+- phase에 매핑됨: 13개
+- 미매핑: 0개 ✓
 
 ---
 *요구사항 정의: 2026-03-21*
-*마지막 업데이트: 2026-03-21 초기 정의 이후*
+*마지막 업데이트: 2026-03-21 roadmap traceability 반영*
