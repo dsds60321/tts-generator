@@ -27,7 +27,11 @@
   2. API 사용자는 지원되는 한국어 화자 중 하나를 골라 결과 음성을 바꿀 수 있다
   3. API 사용자는 허용된 범위 안에서 속도를 조절해 빠르기가 반영된 결과를 받을 수 있다
   4. API 사용자는 하나의 `/synthesize` 요청으로 `WAV` 파일 응답을 바로 받을 수 있다
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] `01-01-PLAN.md` — `main.py` 계약 스켈레톤, 고정 의존성, `/synthesize` 테스트 토대 작성
+- [ ] `01-02-PLAN.md` — `edge-tts` + `ffmpeg` WAV 변환 구현과 실행 runbook 정리
 
 ### Phase 2: 상태 확인과 화자 조회 API
 **Goal**: 외부 클라이언트가 서비스 준비 상태와 지원 화자 목록을 안정적으로 확인할 수 있게 한다
@@ -76,7 +80,7 @@ Phase는 숫자 순서대로 실행한다: `1 -> 2 -> 3 -> 4 -> 5`
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. `main.py` 합성 프로토타입 | 0/TBD | Not started | - |
+| 1. `main.py` 합성 프로토타입 | 0/2 | Not started | - |
 | 2. 상태 확인과 화자 조회 API | 0/TBD | Not started | - |
 | 3. 한 페이지 웹 생성 경험 | 0/TBD | Not started | - |
 | 4. 입력 검증과 읽기 쉬운 실패 응답 | 0/TBD | Not started | - |
