@@ -39,19 +39,23 @@ VOICE_CATALOG: tuple[VoiceProfile, ...] = (
     ),
 )
 
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+STORAGE_ROOT = PROJECT_ROOT / "storage"
+
 
 @dataclass(frozen=True)
 class Settings:
     app_name: str = "TTS Generator"
     api_prefix: str = "/api/v1"
-    storage_root: Path = Path("storage")
-    uploads_dir: Path = Path("storage/uploads")
-    jobs_dir: Path = Path("storage/jobs")
-    outputs_dir: Path = Path("storage/outputs")
-    voice_samples_dir: Path = Path("storage/voice_samples")
-    voice_samples_cache_dir: Path = Path("storage/voice_samples/.cache")
-    models_dir: Path = Path("storage/models")
-    openvoice_checkpoints_dir: Path = Path("storage/models/openvoice/checkpoints_v2")
+    project_root: Path = PROJECT_ROOT
+    storage_root: Path = STORAGE_ROOT
+    uploads_dir: Path = STORAGE_ROOT / "uploads"
+    jobs_dir: Path = STORAGE_ROOT / "jobs"
+    outputs_dir: Path = STORAGE_ROOT / "outputs"
+    voice_samples_dir: Path = STORAGE_ROOT / "voice_samples"
+    voice_samples_cache_dir: Path = STORAGE_ROOT / "voice_samples" / ".cache"
+    models_dir: Path = STORAGE_ROOT / "models"
+    openvoice_checkpoints_dir: Path = STORAGE_ROOT / "models" / "openvoice" / "checkpoints_v2"
     supported_formats: tuple[str, ...] = ("wav", "mp3")
     default_engine: str = "melo"
     default_format: str = "wav"

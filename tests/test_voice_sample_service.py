@@ -55,3 +55,26 @@ class VoiceSampleServiceTest(unittest.TestCase):
         self.assertEqual(first, second)
         self.assertEqual(first.suffix, ".pth")
         self.assertEqual(first.parent.name, ".cache")
+
+    def test_get_reference_voice_normalizes_sample_prefix_spacing_and_extension(self) -> None:
+        service = VoiceSampleService()
+        with TemporaryDirectory() as tmp_dir:
+            root = Path(tmp_dir)
+            cache_dir = root / ".cache"
+            (root / "중후한_남성.mp3").write_bytes(b"sample")
+
+            service.settings = type(
+                "SettingsStub",
+                (),
+                {
+                    "voice_samples_dir": root,
+                    "voice_samples_cache_dir": cache_dir,
+                    "default_voice": "KR",
+                },
+            )()
+
+            spaced = service.get_reference_voice("sample: 중후한_남성")
+            with_extension = service.get_reference_voice("sample:중후한_남성.mp3")
+
+        self.assertEqual(spaced.key, "sample:중후한_남성")
+        self.assertEqual(with_extension.key, "sample:중후한_남성")

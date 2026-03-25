@@ -76,4 +76,11 @@ class VoiceSampleService:
         return self.settings.voice_samples_cache_dir / f"{cache_key}.pth"
 
     def _normalize_key(self, value: str) -> str:
-        return unicodedata.normalize("NFC", value)
+        normalized = unicodedata.normalize("NFC", value).strip()
+        prefix, separator, remainder = normalized.partition(":")
+        if separator and prefix.strip().lower() == self.PREFIX.removesuffix(":"):
+            label = unicodedata.normalize("NFC", remainder).strip()
+            if not label:
+                return self.PREFIX
+            return f"{self.PREFIX}{unicodedata.normalize('NFC', Path(label).stem.strip())}"
+        return normalized
