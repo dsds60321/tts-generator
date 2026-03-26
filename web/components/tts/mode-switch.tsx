@@ -22,23 +22,44 @@ const MODES: Array<{ value: InputMode; label: string; description: string }> = [
 
 export function ModeSwitch({ value, onChange }: ModeSwitchProps) {
   return (
-    <div className="grid gap-3 md:grid-cols-2">
-      {MODES.map((mode) => (
-        <button
-          key={mode.value}
-          type="button"
-          onClick={() => onChange(mode.value)}
-          className={cn(
-            "rounded-xl border p-4 text-left transition-colors",
-            value === mode.value
-              ? "border-black bg-[#f5f5f5]"
-              : "border-line bg-white hover:border-black/40",
-          )}
-        >
-          <div className="text-sm font-semibold text-ink">{mode.label}</div>
-          <div className="mt-1 text-sm text-[#525252]">{mode.description}</div>
-        </button>
-      ))}
+    <div className="app-reveal app-reveal-delay-1 overflow-hidden rounded-[18px] border border-line">
+      <div className="grid gap-px bg-line md:grid-cols-2">
+        {MODES.map((mode) => (
+          <button
+            key={mode.value}
+            type="button"
+            onClick={() => onChange(mode.value)}
+            className={cn(
+              "relative bg-panel px-5 py-5 text-left transition-colors duration-150",
+              value === mode.value ? "bg-white" : "bg-panelMuted hover:bg-panel",
+            )}
+          >
+            <span
+              className={cn(
+                "absolute inset-x-0 top-0 h-[2px] transition-opacity",
+                value === mode.value ? "bg-accent opacity-100" : "bg-transparent opacity-0",
+              )}
+            />
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <div className="mt-4 text-base font-semibold text-ink">{mode.label}</div>
+                <div className="mt-2 max-w-sm text-sm leading-6 text-muted">
+                  {mode.description}
+                </div>
+              </div>
+              {value === mode.value ? (
+                <span className="rounded-md border border-[rgba(29,41,57,0.12)] bg-accentSoft px-2.5 py-1 text-[10px] font-semibold tracking-[0.08em] text-accent">
+                  Active
+                </span>
+              ) : (
+                <span className="rounded-md border border-line bg-white px-2.5 py-1 text-[10px] font-semibold tracking-[0.08em] text-subtle">
+                  Ready
+                </span>
+              )}
+            </div>
+          </button>
+        ))}
+      </div>
     </div>
   );
 }

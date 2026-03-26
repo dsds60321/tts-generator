@@ -14,14 +14,15 @@ export function Button({
   return (
     <button
       className={cn(
-        "inline-flex items-center justify-center rounded-lg border px-4 py-2 text-sm font-semibold transition-colors",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2",
+        "inline-flex h-11 items-center justify-center gap-2 rounded-[12px] border px-4 py-2 text-sm font-semibold tracking-[-0.01em] transition-colors duration-150",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(16,32,51,0.18)] focus-visible:ring-offset-2",
         variant === "primary" &&
-          "border-black bg-black text-white hover:bg-[#222222]",
+          "border-accent bg-accent text-white hover:bg-[#15283d]",
         variant === "secondary" &&
-          "border-line bg-panel text-ink hover:border-black hover:bg-[#f5f5f5]",
-        variant === "ghost" && "border-transparent bg-transparent text-ink hover:bg-[#f5f5f5]",
-        "disabled:cursor-not-allowed disabled:opacity-60",
+          "border-lineStrong bg-panel text-ink hover:border-accent hover:bg-panelMuted",
+        variant === "ghost" &&
+          "border-transparent bg-transparent text-muted hover:bg-panelMuted hover:text-ink",
+        "disabled:cursor-not-allowed disabled:opacity-55",
         className,
       )}
       {...props}

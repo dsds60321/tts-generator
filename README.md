@@ -1,4 +1,5 @@
 # TTS Generator
+![DEMO](demo.gif)
 
 <p align="center">
   <img src="https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white" alt="Python" />
@@ -24,27 +25,7 @@
 
 ## Structure
 
-> 현재는 저장소 내부 구성과 처리 흐름만 Mermaid 다이어그램으로 표현했습니다.
-
-```mermaid
-flowchart TD
-    U[User]
-    F[Next.js Web UI]
-    B[FastAPI API]
-    J[JobService]
-    M[MeloTTS]
-    O[OpenVoice Optional]
-    S[(storage)]
-
-    U --> F
-    F --> B
-    B --> J
-    J --> M
-    J --> O
-    J --> S
-    M --> S
-    O --> S
-```
+![Structure](img.png)
 
 1. 사용자는 `web/` 화면에서 텍스트를 입력하거나 Markdown 파일을 업로드합니다.
 2. `FastAPI`는 입력을 `TTSDocument`와 `TTSSegment`로 정규화하고 `job_id`를 발급합니다.
@@ -72,12 +53,10 @@ flowchart TD
 
 | 영역 | 스택 |
 | --- | --- |
-| Frontend | Next.js 15, React 19, TypeScript, Tailwind CSS, shadcn/ui 스타일 컴포넌트 |
+| Frontend | Next.js 15, React 19, TypeScript |
 | Backend | FastAPI, Uvicorn, `python-multipart` |
 | TTS | MeloTTS, `ffmpeg` |
 | Voice Clone Optional | OpenVoice ToneColorConverter |
-| Storage | 로컬 파일 시스템 `storage/` |
-| Test | `pytest`, `unittest`, `compileall` |
 
 ## TTS / Voice 구성
 
@@ -176,52 +155,29 @@ speed.상담원: 1.1
 - 같은 문단에서 같은 화자가 이어지면 하나의 블록으로 병합한 뒤 segment로 분해합니다.
 - `sample:<이름>` 형식은 `storage/voice_samples/<이름>.*` 샘플 보이스와 연결됩니다.
 
-## 실행 방법
+## OpenVoice 샘플음성 생성
 
-### 1. 백엔드 환경 준비
+샘플 보이스(`sample:<이름>`)를 실제로 사용하려면 OpenVoice Python 패키지와 체크포인트 파일이 모두 필요합니다.
 
-`MeloTTS` 실합성은 현재 저장소 기준 `Python 3.11+` 환경을 전제로 합니다.
-
-```bash
-python3.11 -m venv .venv
-source .venv/bin/activate
-pip install -e .
-```
-
-### 2. MeloTTS 설치
-
-실제 음성 생성을 하려면 optional dependency를 추가로 설치해야 합니다.
+체크포인트는 아래 스크립트로 내려받을 수 있습니다.
 
 ```bash
-pip install -e .[melo]
+./scripts/setup-openvoice.sh
 ```
 
-참고:
-
-- `melo` extra에는 `python-mecab-ko`, `python-mecab-ko-dic`, `setuptools<81` 제약이 포함되어 있습니다.
-- MP3 변환과 WAV 정규화를 위해 시스템에 `ffmpeg`가 설치되어 있어야 합니다.
-
-### 3. 샘플 보이스 등록
-
-샘플 보이스 파일을 아래 디렉터리에 넣으면 보이스 목록에 자동으로 노출됩니다.
-
-```text
-storage/voice_samples/
-```
-
-예시:
-
-```text
-storage/voice_samples/민지.wav
-storage/voice_samples/상담원.mp3
-```
-
-### 4. OpenVoice 준비
-
-샘플 보이스 tone color conversion을 사용하려면 `OpenVoice`와 체크포인트가 추가로 필요합니다.
-
-설치 예시:
+재다운로드가 필요하면:
 
 ```bash
-pip install --no-deps git+https://github.com/myshell-ai/OpenVoice.git
+./scripts/setup-openvoice.sh --force
 ```
+
+스크립트는 아래 3개 파일을 `storage/models/openvoice/checkpoints_v2` 아래에 채웁니다.
+
+- `converter/config.json`
+- `converter/checkpoint.pth`
+- `base_speakers/ses/kr.pth`
+
+## 샘플 음성파일
+
+- 텍스트 음성 파일 : [text to voice](sample/59671acbe6b94940be4f02a2c5c2fe49.wav)
+- MD 샘플 보이스로 음성 파일 생성 : [md to voice](sample/e4915b7c6f0d4d1cb894aea963664b84.wav)
