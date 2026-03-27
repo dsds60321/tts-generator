@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { LoaderCircle, RefreshCcw } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 import {
   buildDownloadUrl,
   createMarkdownJob,
@@ -13,8 +14,8 @@ import {
   type JobResponse,
   type VoiceOption,
 } from "@/lib/api";
-import { MarkdownUploadPanel } from "@/components/tts/markdown-upload-panel";
 import { JobStatusPanel } from "@/components/tts/job-status-panel";
+import { MarkdownUploadPanel } from "@/components/tts/markdown-upload-panel";
 import { ModeSwitch } from "@/components/tts/mode-switch";
 import { OutputFormatPanel } from "@/components/tts/output-format-panel";
 import { ResultPanel } from "@/components/tts/result-panel";
@@ -115,54 +116,22 @@ export function TTSDashboard() {
             ? "실패"
             : "대기";
   const isJobActive = job?.status === "queued" || job?.status === "processing";
-  const summaryCards = [
-    {
-      label: "입력 채널",
-      value: inputMode === "text" ? "텍스트 직접 입력" : "Markdown 업로드",
-      meta:
-        inputMode === "text"
-          ? `${text.length.toLocaleString()}자 준비됨`
-          : markdownFile?.name ?? "선택된 파일 없음",
-    },
-    {
-      label: "화자 프로필",
-      value: inputMode === "markdown" ? "문서 설정 우선" : speaker,
-      meta:
-        inputMode === "markdown"
-          ? "`tts` 블록 기준"
-          : selectedVoice?.label ?? voice,
-    },
-    {
-      label: "출력 규격",
-      value: inputMode === "markdown" ? "문서 지시값 우선" : outputFormat.toUpperCase(),
-      meta: inputMode === "markdown" ? "기본값 WAV" : "단일 파일 결과물",
-    },
-    {
-      label: "작업 상태",
-      value: statusLabel,
-      meta: job ? `${job.progress_percent}% 진행` : "아직 요청 없음",
-    },
-  ];
-  const workspaceHighlights = [
-    {
-      label: "문서 처리",
-      description:
-        inputMode === "text"
-          ? "텍스트를 바로 segment 단위 처리 흐름에 전달합니다."
-          : "`tts` 블록과 `화자: 내용` 문법을 우선 해석합니다.",
-    },
-    {
-      label: "출력 흐름",
-      description:
-        inputMode === "markdown"
-          ? "문서 지시값이 있으면 포맷과 화자 설정을 그대로 사용합니다."
-          : `${outputFormat.toUpperCase()} 기준 파이프라인으로 결과를 정리합니다.`,
-    },
-    {
-      label: "보관 정책",
-      description: "다운로드가 끝나면 서버 저장본을 즉시 정리합니다.",
-    },
-  ];
+  const statusToneClass =
+    isSubmitting || isJobActive
+      ? "bg-warningSoft text-warning"
+      : job?.status === "completed"
+        ? "bg-successSoft text-success"
+        : job?.status === "failed"
+          ? "bg-dangerSoft text-danger"
+          : "bg-panelMuted text-subtle";
+  const primaryActionLabel = isSubmitting ? "생성 중..." : "음성 생성하기";
+  const isPrimaryActionDisabled =
+    isSubmitting || (inputMode === "text" ? !text.trim() : !markdownFile);
+  const actionSummary = [
+    inputMode === "text" ? "직접 입력" : "Markdown 업로드",
+    inputMode === "markdown" ? "문서 설정 우선" : outputFormat.toUpperCase(),
+    `${Math.round(speed * 100)}% 속도`,
+  ].join(" · ");
 
   async function handleSubmit() {
     setErrorMessage(null);
@@ -212,145 +181,128 @@ export function TTSDashboard() {
   }
 
   return (
-    <main className="min-h-screen bg-canvas px-4 pb-10 pt-4 sm:px-6 lg:px-8">
-      <div className="mx-auto max-w-[1480px]">
-        <div className="grid gap-6 xl:grid-cols-[minmax(0,1.6fr)_360px]">
+    <main className="min-h-screen bg-panelMuted px-4 pb-36 pt-5 sm:px-6 sm:pb-40 lg:px-8">
+      <div className="mx-auto max-w-[1240px]">
+        <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_308px]">
           <div className="space-y-6">
-            <section className="app-reveal overflow-hidden rounded-[22px] border border-line bg-panel">
-              <div className="grid gap-8 px-6 py-6 sm:px-8 sm:py-8 xl:grid-cols-[minmax(0,1fr)_420px] xl:items-end">
-                <div>
-                  <div className="flex flex-wrap items-center gap-3">
-                    <span className="inline-flex items-center gap-2 rounded-md border border-line bg-panelMuted px-3 py-1.5 text-[11px] font-semibold tracking-[0.08em] text-subtle">
-                      <span
-                        className={cn(
-                          "h-2 w-2 rounded-full",
-                          isSubmitting || isJobActive
-                            ? "bg-warning app-status-beacon"
-                            : job?.status === "completed"
-                              ? "bg-success"
-                              : job?.status === "failed"
-                                ? "bg-danger"
-                                : "bg-lineStrong",
-                        )}
-                      />
-                      {job ? `현재 상태 ${statusLabel}` : "새 작업 대기"}
-                    </span>
-                  </div>
-                  <h1 className="mt-5 max-w-3xl text-3xl font-semibold tracking-[-0.04em] text-ink sm:text-[2.6rem]">
-                    웹 TTS 생성기
-                  </h1>
-                  <p className="mt-4 max-w-3xl text-sm leading-7 text-muted">
-                    텍스트 입력과 Markdown 업로드를 같은 생성 파이프라인으로 연결합니다.
-                    운영 화면은 단순하게 유지하고, 실제 생성 로직과 결과 다운로드 흐름은
-                    그대로 보존했습니다.
-                  </p>
-
-                  <div className="mt-6 overflow-hidden rounded-[16px] border border-line">
-                    <div className="grid gap-px bg-line sm:grid-cols-3">
-                      {workspaceHighlights.map((item) => (
-                        <div key={item.label} className="bg-panelMuted px-4 py-4">
-                          <div className="text-[11px] font-semibold tracking-[0.12em] text-subtle">
-                            {item.label}
-                          </div>
-                          <div className="mt-2 text-sm leading-6 text-muted">
-                            {item.description}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+            <Card className="p-6 sm:p-7">
+              <div className="mb-6 border-b border-line pb-6">
+                <div className="flex flex-wrap items-center gap-3">
+                  <span
+                    className={cn(
+                      "inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold",
+                      statusToneClass,
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "h-2 w-2 rounded-full bg-current",
+                        (isSubmitting || isJobActive) && "app-status-beacon",
+                      )}
+                    />
+                    {job ? statusLabel : "대기 중"}
+                  </span>
                 </div>
+                <h1 className="mt-4 text-[1.9rem] font-semibold tracking-[-0.04em] text-ink sm:text-[2.2rem]">
+                  음성 만들기
+                </h1>
+              </div>
+              <ModeSwitch value={inputMode} onChange={setInputMode} />
+              <div className="mt-7">
+                {inputMode === "text" ? (
+                  <TextInputPanel text={text} onChange={setText} />
+                ) : (
+                  <MarkdownUploadPanel file={markdownFile} onChange={setMarkdownFile} />
+                )}
+              </div>
+            </Card>
 
-                <div className="overflow-hidden rounded-[18px] border border-line">
-                  <div className="grid gap-px bg-line sm:grid-cols-2">
-                    {summaryCards.map((item) => (
-                      <div key={item.label} className="bg-white px-4 py-4">
-                        <div className="text-[11px] font-semibold tracking-[0.12em] text-subtle">
-                          {item.label}
-                        </div>
-                        <div className="mt-2 text-sm font-semibold text-ink">{item.value}</div>
-                        <div className="mt-1 text-sm leading-6 text-muted">{item.meta}</div>
-                      </div>
-                    ))}
-                  </div>
+            <Card className="p-6 sm:p-7">
+              <div className="mb-6">
+                <h2 className="text-xl font-semibold text-ink">옵션 설정</h2>
+                <p className="mt-1 text-sm text-muted">
+                  필요한 항목만 확인하면 됩니다. 문서 업로드 시 문서 설정이 우선 적용됩니다.
+                </p>
+              </div>
+              <div className="space-y-8">
+                <SpeakerSettingsPanel
+                  speaker={speaker}
+                  voice={voice}
+                  speed={speed}
+                  disabled={inputMode === "markdown"}
+                  isLoadingVoices={isVoicesLoading}
+                  voices={voiceOptions}
+                  voiceDescription={selectedVoice?.description ?? null}
+                  onSpeakerChange={setSpeaker}
+                  onVoiceChange={setVoice}
+                  onSpeedChange={setSpeed}
+                />
+
+                <div className="border-t border-line pt-8">
+                  <OutputFormatPanel
+                    value={outputFormat}
+                    disabled={inputMode === "markdown"}
+                    helperText={
+                      inputMode === "markdown"
+                        ? "문서에 파일 형식이 적혀 있으면 그 값을 사용하고, 없으면 기본값을 사용합니다."
+                        : "직접 입력 모드에서는 여기서 고른 형식으로 결과 파일을 만듭니다."
+                    }
+                    onChange={setOutputFormat}
+                  />
                 </div>
               </div>
-            </section>
+            </Card>
 
-            <ModeSwitch value={inputMode} onChange={setInputMode} />
-
-            {inputMode === "text" ? (
-              <TextInputPanel text={text} onChange={setText} />
-            ) : (
-              <MarkdownUploadPanel file={markdownFile} onChange={setMarkdownFile} />
-            )}
-
-            <SpeakerSettingsPanel
-              speaker={speaker}
-              voice={voice}
-              speed={speed}
-              disabled={inputMode === "markdown"}
-              isLoadingVoices={isVoicesLoading}
-              voices={voiceOptions}
-              voiceDescription={selectedVoice?.description ?? null}
-              onSpeakerChange={setSpeaker}
-              onVoiceChange={setVoice}
-              onSpeedChange={setSpeed}
-            />
-
-            <OutputFormatPanel
-              value={outputFormat}
-              disabled={inputMode === "markdown"}
-              helperText={
-                inputMode === "markdown"
-                  ? "Markdown 업로드 모드에서는 파일 내부 `tts` 블록의 `format` 설정이 우선 적용됩니다. 설정이 없으면 시스템 기본값 `wav` 를 사용합니다."
-                  : "텍스트 직접 입력 모드에서는 여기서 선택한 포맷이 그대로 적용됩니다."
-              }
-              onChange={setOutputFormat}
-            />
-
-            <section className="app-reveal app-reveal-delay-4 relative overflow-hidden rounded-[18px] border border-[#111827] bg-[#111827] px-5 py-5 text-white sm:px-6">
-              <div className="app-runline absolute inset-x-0 top-0 h-px" />
-              <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-                <div>
-                  <div className="text-[11px] font-semibold tracking-[0.14em] text-white/70">
-                    EXECUTION
-                  </div>
-                  <div className="mt-2 text-lg font-semibold">생성 작업 제어</div>
-                  <p className="mt-1 text-sm leading-6 text-white/70">
-                    현재 입력값으로 생성 작업을 시작하거나, 기존 작업 상태를 수동으로 다시
-                    조회합니다.
-                  </p>
-                </div>
-
-                <div className="flex flex-wrap gap-3">
-                  <Button
-                    onClick={handleSubmit}
-                    disabled={isSubmitting}
-                    className="min-w-[168px] border-white bg-white text-accent hover:bg-[#f2f5f8]"
-                  >
-                    {isSubmitting ? (
-                      <LoaderCircle className="h-4 w-4 animate-spin" />
-                    ) : null}
-                    음성 생성 시작
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    onClick={handleRefresh}
-                    disabled={!job}
-                    className="min-w-[156px] border-white/15 bg-white/10 text-white hover:border-white/40 hover:bg-white/15"
-                  >
-                    <RefreshCcw className="h-4 w-4" />
-                    상태 새로고침
-                  </Button>
-                </div>
-              </div>
-            </section>
+            <div className="px-1 text-sm text-subtle">
+              {job
+                ? `현재 상태: ${statusLabel}`
+                : inputMode === "text"
+                  ? "텍스트를 입력하면 바로 생성할 수 있습니다."
+                  : "Markdown 파일을 선택하면 바로 생성할 수 있습니다."}
+            </div>
           </div>
 
-          <div className="space-y-6 self-start xl:sticky xl:top-4">
+          <div className="space-y-5 self-start xl:sticky xl:top-6">
             <JobStatusPanel job={job} errorMessage={errorMessage} />
             <ResultPanel job={job} downloadUrl={downloadUrl} />
+          </div>
+        </div>
+      </div>
+
+      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-30 px-4 pb-4 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-[1240px]">
+          <div className="pointer-events-auto rounded-[20px] border border-[rgba(15,23,40,0.08)] bg-white/96 p-4 shadow-[0_-8px_30px_rgba(15,23,40,0.08)] backdrop-blur">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div className="min-w-0">
+                <div className="text-xs font-semibold text-subtle">바로 실행</div>
+                <div className="mt-1 text-sm font-medium text-ink">{actionSummary}</div>
+                <div className="mt-1 text-sm text-muted">
+                  {job ? `현재 상태 ${statusLabel}` : "설정을 확인한 뒤 바로 생성해 주세요."}
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <Button
+                  onClick={handleSubmit}
+                  disabled={isPrimaryActionDisabled}
+                  className="min-w-[180px]"
+                >
+                  {isSubmitting ? (
+                    <LoaderCircle className="h-4 w-4 animate-spin" />
+                  ) : null}
+                  {primaryActionLabel}
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={handleRefresh}
+                  disabled={!job}
+                  className="min-w-[152px]"
+                >
+                  <RefreshCcw className="h-4 w-4" />
+                  상태 새로고침
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

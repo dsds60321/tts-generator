@@ -1,4 +1,3 @@
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
@@ -57,138 +56,119 @@ export function SpeakerSettingsPanel({
         ];
 
   return (
-    <Card className="app-reveal app-reveal-delay-3 p-0">
-      <div className="border-b border-line px-6 py-5">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <p className="text-[11px] font-semibold tracking-[0.16em] text-subtle">
-              VOICE PROFILE
-            </p>
-            <h2 className="mt-2 text-lg font-semibold text-ink">화자 설정</h2>
-            <p className="mt-1 max-w-2xl text-sm leading-6 text-muted">
-              단일 화자 기준 설정 면입니다. 백엔드로 전달되는 구조는 유지하면서 현재 사용
-              가능한 보이스와 속도를 더 선명하게 읽도록 정리했습니다.
-            </p>
-          </div>
+    <div className="app-reveal app-reveal-delay-3">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 className="text-lg font-semibold text-ink">화자와 속도</h2>
+          <p className="mt-1 text-sm text-muted">
+            필요한 설정만 확인하고 바로 시작할 수 있게 정리했습니다.
+          </p>
+        </div>
+        <span
+          className={cn(
+            "inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-semibold",
+            disabled
+              ? "bg-panelMuted text-subtle"
+              : isLoadingVoices
+                ? "bg-warningSoft text-warning"
+                : "bg-successSoft text-success",
+          )}
+        >
           <span
             className={cn(
-              "inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-[11px] font-semibold tracking-[0.08em]",
+              "h-2 w-2 rounded-full",
               disabled
-                ? "border-line bg-panelMuted text-subtle"
+                ? "bg-lineStrong"
                 : isLoadingVoices
-                  ? "border-[rgba(181,71,8,0.16)] bg-warningSoft text-warning"
-                  : "border-[rgba(6,118,71,0.14)] bg-successSoft text-success",
+                  ? "bg-warning app-status-beacon"
+                  : "bg-success",
             )}
-          >
-            <span
-              className={cn(
-                "h-2 w-2 rounded-full",
-                disabled
-                  ? "bg-lineStrong"
-                  : isLoadingVoices
-                    ? "bg-warning app-status-beacon"
-                    : "bg-success",
-              )}
-            />
-            {disabled
-              ? "문서 설정 적용 중"
-              : isLoadingVoices
-                ? "보이스 목록 로딩 중"
-                : "실시간 선택 가능"}
-          </span>
-        </div>
+          />
+          {disabled
+            ? "문서 설정 사용"
+            : isLoadingVoices
+              ? "보이스 불러오는 중"
+              : "설정 가능"}
+        </span>
       </div>
 
-      <div className="px-6 py-6">
-        {disabled ? (
-          <div className="app-disabled-note mb-4 rounded-[14px] border border-line bg-panelMuted px-4 py-3 text-sm leading-6 text-muted">
-            Markdown 업로드 모드에서는 문서 내부의{" "}
-            <code className="rounded bg-white px-1.5 py-0.5">voice</code>,{" "}
-            <code className="rounded bg-white px-1.5 py-0.5">speaker</code>,{" "}
-            <code className="rounded bg-white px-1.5 py-0.5">speed</code> 설정이 우선
-            적용됩니다.
-          </div>
-        ) : null}
+      {disabled ? (
+        <div className="mt-4 rounded-[16px] bg-panelMuted px-4 py-4 text-sm leading-6 text-muted">
+          업로드한 문서에 적힌 화자, 보이스, 속도 설정을 우선 사용합니다.
+        </div>
+      ) : null}
 
-        <div className="grid gap-4 md:grid-cols-2">
-          <div className="rounded-[16px] border border-line bg-panelMuted p-4">
-            <Label htmlFor="speaker-name">화자 이름</Label>
-            <Input
-              id="speaker-name"
-              value={speaker}
-              disabled={disabled}
-              onChange={(event) => onSpeakerChange(event.target.value)}
-            />
-            <p className="mt-2 text-xs leading-5 text-subtle">
-              UI 기본값이며, 구조상 이후 speaker 단위 확장이 가능합니다.
-            </p>
-          </div>
-
-          <div className="rounded-[16px] border border-line bg-panelMuted p-4">
-            <Label htmlFor="speaker-voice">보이스</Label>
-            <Select
-              id="speaker-voice"
-              value={voice}
-              disabled={voiceSelectDisabled}
-              options={selectOptions}
-              onChange={(event) => onVoiceChange(event.target.value)}
-            />
-            {isLoadingVoices ? (
-              <div className="mt-3 space-y-2">
-                <div className="app-skeleton h-3 w-5/6" />
-                <div className="app-skeleton h-3 w-3/5" />
-              </div>
-            ) : (
-              <p className="mt-2 text-xs leading-5 text-subtle">
-                {voiceDescription ?? "현재 엔진에서 실제로 선택 가능한 보이스만 표시합니다."}
-              </p>
-            )}
-          </div>
+      <div className="mt-5 grid gap-4 md:grid-cols-2">
+        <div>
+          <Label htmlFor="speaker-name" className="text-xs tracking-[0.08em]">
+            화자명
+          </Label>
+          <Input
+            id="speaker-name"
+            value={speaker}
+            disabled={disabled}
+            className="rounded-[16px] border-white bg-white shadow-[0_10px_30px_rgba(15,23,40,0.06)]"
+            onChange={(event) => onSpeakerChange(event.target.value)}
+          />
+          <p className="mt-2 text-sm text-muted">직접 입력 모드에서 사용할 이름입니다.</p>
         </div>
 
-        <div className="mt-4 rounded-[16px] border border-line bg-panelMuted p-5">
-          <div className="flex items-center justify-between gap-3">
-            <Label htmlFor="speaker-speed" className="mb-0">
-              속도
-            </Label>
-            <div className="text-sm font-semibold text-ink">
-              {speedPercent}%{" "}
-              <span className="ml-1 text-subtle">{describeSpeed(speed)}</span>
-            </div>
-          </div>
-
-          <input
-            id="speaker-speed"
-            type="range"
-            min={50}
-            max={200}
-            step={5}
-            disabled={disabled}
-            value={speedPercent}
-            onChange={(event) => onSpeedChange(Number(event.target.value) / 100)}
-            className="app-range mt-4 w-full cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
+        <div>
+          <Label htmlFor="speaker-voice" className="text-xs tracking-[0.08em]">
+            보이스
+          </Label>
+          <Select
+            id="speaker-voice"
+            value={voice}
+            disabled={voiceSelectDisabled}
+            options={selectOptions}
+            className="rounded-[16px] border-white bg-white shadow-[0_10px_30px_rgba(15,23,40,0.06)]"
+            onChange={(event) => onVoiceChange(event.target.value)}
           />
-
-          <div className="mt-3 flex items-center justify-between text-[11px] text-subtle">
-            <span>50% 느림</span>
-            <span>100% 기본</span>
-            <span>130% 빠름</span>
-            <span>200% 최대</span>
-          </div>
-
-          {disabled ? (
-            <div className="app-disabled-note mt-4 rounded-[12px] border border-[rgba(16,32,51,0.08)] bg-white px-4 py-3 text-xs leading-5 text-muted">
-              현재 속도 슬라이더는 잠겨 있으며, 업로드한 문서의 화자별 속도값이 우선
-              적용됩니다.
-            </div>
+          {isLoadingVoices ? (
+            <p className="mt-2 text-sm text-muted">선택 가능한 보이스를 불러오고 있어요.</p>
           ) : (
-            <p className="mt-3 text-xs leading-5 text-muted">
-              100%는 기본 속도입니다. 보통 115%부터 조금 빨라진 느낌이 나고, 130%
-              이상이면 빠르게 읽는 인상이 분명해집니다.
+            <p className="mt-2 text-sm text-muted">
+              {voiceDescription ?? "지금 사용할 수 있는 보이스만 보여줍니다."}
             </p>
           )}
         </div>
       </div>
-    </Card>
+
+      <div className="mt-5 rounded-[18px] bg-white p-5 shadow-[0_10px_30px_rgba(15,23,40,0.06)]">
+        <div className="flex items-center justify-between gap-3">
+          <Label htmlFor="speaker-speed" className="mb-0 text-xs tracking-[0.08em]">
+            속도
+          </Label>
+          <div className="text-sm font-semibold text-ink">
+            {speedPercent}% <span className="ml-1 text-muted">{describeSpeed(speed)}</span>
+          </div>
+        </div>
+
+        <input
+          id="speaker-speed"
+          type="range"
+          min={50}
+          max={200}
+          step={5}
+          disabled={disabled}
+          value={speedPercent}
+          onChange={(event) => onSpeedChange(Number(event.target.value) / 100)}
+          className="app-range mt-4 w-full cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
+        />
+
+        <div className="mt-3 flex items-center justify-between text-[11px] text-subtle">
+          <span>느리게</span>
+          <span>기본</span>
+          <span>빠르게</span>
+        </div>
+
+        <p className="mt-3 text-sm text-muted">
+          {disabled
+            ? "문서에 적힌 속도 설정을 그대로 사용합니다."
+            : "100%가 기본 속도입니다. 필요할 때만 조절해 주세요."}
+        </p>
+      </div>
+    </div>
   );
 }

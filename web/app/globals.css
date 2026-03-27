@@ -4,15 +4,15 @@
 
 :root {
   color-scheme: light;
-  --canvas: #edf1f6;
-  --canvas-alt: #e4eaf1;
-  --panel: #fbfcfe;
-  --panel-muted: #f3f6fa;
+  --canvas: #ffffff;
+  --canvas-alt: #fbfcfd;
+  --panel: #ffffff;
+  --panel-muted: #f7f8fa;
   --ink: #0f1728;
-  --muted: #445164;
-  --subtle: #67768a;
-  --line: #d6dde6;
-  --line-strong: #b8c3d1;
+  --muted: #4b5a6c;
+  --subtle: #6f7c8d;
+  --line: #e7ebf0;
+  --line-strong: #c4ccd6;
   --accent: #102033;
 }
 
@@ -40,22 +40,7 @@ body {
 body {
   min-height: 100vh;
   position: relative;
-  background:
-    radial-gradient(circle at top left, rgba(255, 255, 255, 0.94), transparent 28%),
-    radial-gradient(circle at top right, rgba(16, 32, 51, 0.06), transparent 24%),
-    linear-gradient(180deg, #f8fafd 0%, var(--canvas) 220px, var(--canvas) 100%);
-}
-
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background-image:
-    linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
-  background-size: 32px 32px;
-  mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.22), transparent 44%);
+  background: #ffffff;
 }
 
 code,
@@ -210,28 +195,6 @@ pre {
   animation-delay: 0.32s;
 }
 
-.app-kicker {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 10px;
-  border: 1px solid rgba(16, 32, 51, 0.12);
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.72);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  color: var(--subtle);
-}
-
-.app-kicker::before {
-  content: "";
-  width: 6px;
-  height: 6px;
-  border-radius: 9999px;
-  background: var(--accent);
-}
-
 .app-skeleton,
 .app-skeleton-block,
 .app-empty-state,
@@ -242,7 +205,7 @@ pre {
 
 .app-skeleton,
 .app-skeleton-block {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(224, 231, 240, 0.96));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(236, 240, 245, 0.96));
 }
 
 .app-skeleton {
@@ -261,7 +224,7 @@ pre {
   position: absolute;
   inset: 0;
   transform: translateX(-110%);
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.78), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.52), transparent);
   animation: appShimmer 1.8s ease-in-out infinite;
 }
 
@@ -281,15 +244,6 @@ pre {
   transform: translateX(-110%);
   background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.5), transparent);
   animation: appShimmer 1.8s linear infinite;
-}
-
-.app-runline::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  transform: translateX(-110%);
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
-  animation: appShimmer 2.6s linear infinite;
 }
 
 .app-audio-bars {
@@ -338,7 +292,6 @@ pre {
   .app-empty-state::after,
   .app-disabled-note::after,
   .app-progress-active .app-progress-fill::after,
-  .app-runline::after,
   .app-status-beacon,
   .app-audio-bars span {
     animation: none;
